@@ -36,7 +36,7 @@
 	<button
 		id="lectureList"
 		type="button"
-		class="btn btn-xl md:btn-xl bg-primary-500 rotated-btn"
+		class="btn btn-xl md:btn-xl bg-primary-500 dark:bg-secondary-500 rotated-btn"
 		on:click={openDrawer}
 	>
 		Lista de lectura

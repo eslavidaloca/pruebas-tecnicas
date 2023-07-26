@@ -79,7 +79,7 @@
 	// }
 </script>
 
-<div class="card card-hover bg-primary-500 shadow-neutral-800 dark:bg-secondary-900 dark:shadow-red-700 m-4 cursor-pointer" 
+<div class="card card-hover bg-primary-500 shadow-secondary-500 dark:bg-secondary-900 dark:shadow-red-700 m-4 cursor-pointer" 
 	on:click={() => {
 		toggleBookList(book).catch(error => {
 			console.error('Error:', error);
