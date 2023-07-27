@@ -1,18 +1,28 @@
 <script lang="ts">
-	import type { Readable, Writable } from 'svelte/store';
+	import { onMount, afterUpdate, onDestroy } from 'svelte';
 	import data from '../data/books.json';
-	import { openDrawer, closeDrawer } from '$lib/components/drawerSkeleton.svelte';
-	import { localStorageStore } from '@skeletonlabs/skeleton';
-	import { get } from 'svelte/store';
+	import { openDrawer } from '$lib/components/drawerSkeleton.svelte';
+	import { get, type Writable } from 'svelte/store';
 
+	import storage from '$lib/store';
 	import CardImage from '$lib/components/cardImage.svelte';
 
 	import type { Book } from '$lib/interfaces/book.interface.svelte';
+	import { localStorageStore } from '@skeletonlabs/skeleton';
 
 	let books: Book[] = [];
 	let available: number = 0;
+	let inLectureList: number = 0;
 	let availableSpan: HTMLSpanElement; // Variable para hacer referencia al span
-	const lectureList: Readable<Book[]> = localStorageStore('lectureList', []);
+	// const lectureList: Readable<Book[]> = localStorageStore('lectureList', []);
+	const lectureList = storage<Book[]>('lectureList', []);
+
+	const writableLectureList: Writable<Book[]> = localStorageStore('lectureList', []);
+
+    // esta funcion es para actualizar los libros cuando pasamos de lectura a available
+    const unsubscribe = writableLectureList.subscribe(async() => {
+        await getBooks();
+    });
 
 	async function getBooks(): Promise<void> {
 		try {
@@ -22,10 +32,23 @@
 			const lectureTitles = currentLectureList.map((item) => item.title); // Crear un array de títulos de libros
 			books = books.filter((item) => !lectureTitles.includes(item.title)); // Comparar los títulos de libros
 			available = books.length;
+			inLectureList = currentLectureList.length;
 		} catch (error) {
 			console.error('Error:', error);
 		}
 	}
+	onMount(() => {
+		getBooks();
+		window.onstorage = () => {
+			getBooks();
+		};
+	});
+	// afterUpdate(() => {
+	// 	getBooks();
+	// });
+	onDestroy(() => {
+        unsubscribe(); // Limpieza cuando el componente se destruye
+    });
 </script>
 
 <svelte:head>
@@ -46,11 +69,14 @@
 	<div class="flex-col">
 		{#await getBooks() then}
 			<span
-				class="md:text-5xl text-4xl text-primary-500 dark:text-tertiary-500"
+				class="md:text-5xl text-4xl text-primary-500 dark:text-secondary-500"
 				bind:this={availableSpan}
 			>
 				{available} Libros disponibles
+				<br>
+				<small class="md:text-4xl text-3xl pl-1 dark:text-primary-500 text-secondary-500">{inLectureList} Libros en lectura</small>
 			</span>
+			
 			<div class="grid grid-cols-4 mt-5 space-x-4">
 				{#each books as book}
 					<CardImage bind:books {book} bind:availableSpan addToLecture={true} />

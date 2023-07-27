@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import { modalStore } from '@skeletonlabs/skeleton';
-	import type { ModalSettings, ModalComponent } from '@skeletonlabs/skeleton';
+	import type { ModalSettings } from '@skeletonlabs/skeleton';
     import type { Writable } from 'svelte/store';
 	import { localStorageStore } from '@skeletonlabs/skeleton';
 	// import closeDrawer from '$lib/components/drawerSkeleton.svelte';
@@ -13,7 +13,7 @@
     export let books: Book[] = [];
 	export let book: Book;
     let available: number = 0;
-	export let availableSpan: HTMLSpanElement; // Variable para hacer referencia al span
+	export let availableSpan: HTMLSpanElement = document.createElement('span'); // Variable para hacer referencia al span
 	export let addToLecture: boolean = false;
 
     async function toggleBookList(book: Book): Promise<void> {
@@ -41,7 +41,11 @@
 					//Delete the book from books
 					books = books.filter((item) => item.title !== book.title);
 					available = books.length;
-					availableSpan.innerHTML = `${available} Libros disponibles`;
+					const inLectureList = helperList.length;
+					availableSpan.innerHTML = `${available} Libros disponibles <br>
+											<small class="md:text-4xl text-3xl pl-1 dark:text-primary-500 text-secondary-500">
+												${inLectureList} Libros en lectura
+											</small>`;
 				}
 			});
 		}
@@ -67,16 +71,13 @@
 					lectureList.set(helperList);
 					// Desuscribirse después de actualizar el valor del store
 					unsubscribe();
-					//Add the book to books
-					books = [...books, book];
-					available = books.length;
+					//Delete the book from books
+					books = books.filter((item) => item.title !== book.title);
 				}
 			});
 		}
 
 	}
-    // async function addBookToAvailable(book: Book): Promise<void> {
-	// }
 </script>
 
 <div class="card card-hover bg-primary-500 shadow-secondary-500 dark:bg-secondary-900 dark:shadow-red-700 m-4 cursor-pointer" 

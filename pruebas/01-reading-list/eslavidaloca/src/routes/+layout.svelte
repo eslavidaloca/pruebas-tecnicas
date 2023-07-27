@@ -25,7 +25,7 @@
 				<strong class="text-xl uppercase">Libreria</strong>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				<LightSwitch bgLight={'bg-primary-500'} ring='ring-[3px] ring-surface-500/30' />
+				<LightSwitch bgLight='bg-secondary-500 dark:bg-primary-500' ring='ring-[3px] ring-surface-500/30' />
 				
 			</svelte:fragment>
 		</AppBar>
