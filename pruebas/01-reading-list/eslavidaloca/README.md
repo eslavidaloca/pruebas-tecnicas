@@ -1,6 +1,8 @@
 # Svelte Library
 
-Web page made with svelte to participate in the first challenge midudev proposed inside his page [`pruebas-tecnicas`](https://pruebastecnicas.com/). Due to my work I couldn't finished in time to participate but still I wanted to try svelte and create something with it 
+Web page made with svelte to participate in the first challenge midudev proposed inside his page [`pruebas-tecnicas`](https://pruebastecnicas.com/). Due to my work I couldn't finished in time to participate but still I wanted to try svelte and create something with it.
+
+This project is a SPA so there's only one page where you can see everything this project does. Hope you like it!
 
 ## Developing
 
