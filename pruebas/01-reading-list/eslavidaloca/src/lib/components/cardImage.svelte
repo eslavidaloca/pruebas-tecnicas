@@ -12,8 +12,6 @@
 
     export let books: Book[] = [];
 	export let book: Book;
-    let available: number = 0;
-	export let availableSpan: HTMLSpanElement = document.createElement('span'); // Variable para hacer referencia al span
 	export let addToLecture: boolean = false;
 
     async function toggleBookList(book: Book): Promise<void> {
@@ -40,12 +38,6 @@
 					unsubscribe();
 					//Delete the book from books
 					books = books.filter((item) => item.title !== book.title);
-					available = books.length;
-					const inLectureList = helperList.length;
-					availableSpan.innerHTML = `${available} Libros disponibles <br>
-											<small class="md:text-4xl text-3xl pl-1 dark:text-primary-500 text-secondary-500">
-												${inLectureList} Libros en lectura
-											</small>`;
 				}
 			});
 		}

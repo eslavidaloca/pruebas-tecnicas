@@ -19,12 +19,12 @@
     
 	const lectureList = storage<Book[]>('lectureList', []);
 	let books: Book[] = [];
-    const writableLectureList: Writable<Book[]> = localStorageStore('lectureList', []);
+    // const writableLectureList: Writable<Book[]> = localStorageStore('lectureList', []);
 
     // esta funcion es para actualizar el store cuando pasamos de available a lectura
-    const unsubscribe = writableLectureList.subscribe(value => {
-        books = value; // Actualizamos la variable cuando haya cambios en el store
-    });
+    // const unsubscribe = writableLectureList.subscribe(value => {
+    //     books = value; // Actualizamos la variable cuando haya cambios en el store
+    // });
     
 	async function getBooks(): Promise<void> {
 		try {
@@ -45,9 +45,9 @@
     // afterUpdate(() => {
 	// 	getBooks();
 	// });
-    onDestroy(() => {
-        unsubscribe(); // Limpieza cuando el componente se destruye
-    });
+    // onDestroy(() => {
+    //     unsubscribe(); // Limpieza cuando el componente se destruye
+    // });
 </script>
 
 <Drawer position="right" on:touchstart={getBooks}>
