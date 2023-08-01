@@ -3,7 +3,6 @@
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
     import type { Writable } from 'svelte/store';
 	import { localStorageStore } from '@skeletonlabs/skeleton';
-	// import closeDrawer from '$lib/components/drawerSkeleton.svelte';
 
 	import type { Book } from '$lib/interfaces/book.interface.svelte';
 

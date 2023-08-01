@@ -5,11 +5,13 @@
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	// Most of your app wide CSS should be put in this file
 	import '../app.postcss';
-	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
+	import { AppShell, AppBar, drawerStore } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import { Modal } from '@skeletonlabs/skeleton';
 
 	import DrawerSkeleton from '$lib/components/drawerSkeleton.svelte';
+
+	$: positionClasses = $drawerStore.open ? 'translate-x-[50%]' : '';
 </script>
 
 <DrawerSkeleton />
@@ -17,7 +19,7 @@
 <Modal />
 
 <!-- App Shell -->
-<AppShell>
+<AppShell class="transition-transform {positionClasses}">
 	<svelte:fragment slot="header">
 		<!-- App Bar -->
 		<AppBar>
