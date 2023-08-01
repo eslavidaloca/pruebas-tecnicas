@@ -12,17 +12,18 @@
 
 	import type { Book } from '$lib/interfaces/book.interface.svelte';
 
-	let books : Book[]   = [];
+	let books: Book[] = [];
+	let lectureList: Book[] = [];
 	let genres: string[] = [];
 
-	const lectureList    : Writable<Book[]>   = localStorageStore('lectureList', []);
-	const noPaginasSlider: Writable<number>   = localStorageStore('noPaginasSlider', 1500);
-	const selectedGenres : Writable<string[]> = localStorageStore('selectedGenres', []);
+	const lectureListStore: Writable<Book[]> = localStorageStore('lectureList', []);
+	const noPaginasSlider: Writable<number> = localStorageStore('noPaginasSlider', 1500);
+	const selectedGenres: Writable<string[]> = localStorageStore('selectedGenres', []);
 
 	const getBooks = async (): Promise<void> => {
 		try {
 			books = data.library.map((item) => item.book as Book);
-			const lectureTitles = $lectureList.map((item) => item.title); // Crear un array de títulos de libros
+			const lectureTitles = $lectureListStore.map((item) => item.title); // Crear un array de títulos de libros
 			books = books.filter((item) => !lectureTitles.includes(item.title)); // Comparar los títulos de libros
 			getGenres();
 			filterBooks();
@@ -44,22 +45,27 @@
 	};
 	const filterBooks = (): void => {
 		try {
+			lectureList = $lectureListStore;
 			// Obtener el array de títulos de los libros en lectura
-			const lectureTitles = $lectureList.map((item) => item.title);
+			const lectureTitles = $lectureListStore.map((item) => item.title);
 
 			// Filtrar los libros según los géneros seleccionados y el valor del slider
-			books = data.library.map((item) => item.book as Book)
+			books = data.library
+				.map((item) => item.book as Book)
 				.filter((item) => !lectureTitles.includes(item.title)) // Excluir los libros en lectura
 				.filter((item) => $selectedGenres.length === 0 || $selectedGenres.includes(item.genre)) // Filtrar por géneros
 				.filter((item) => item.pages <= $noPaginasSlider); // Filtrar por el valor del slider
 
+			lectureList = lectureList
+				.filter((item) => $selectedGenres.length === 0 || $selectedGenres.includes(item.genre)) // Filtrar por géneros
+				.filter((item) => item.pages <= $noPaginasSlider); // Filtrar por el valor del slider
 		} catch (error) {
 			console.error('Error:', error);
 		}
 	};
 	noPaginasSlider.subscribe(() => filterBooks());
 	selectedGenres.subscribe(() => filterBooks());
-	lectureList.subscribe(() => getBooks());
+	lectureListStore.subscribe(() => getBooks());
 </script>
 
 <svelte:head>
@@ -87,11 +93,13 @@
 					{books.length} Libros disponibles
 					<br />
 					<small class="md:text-4xl text-3xl pl-1 dark:text-primary-500 text-secondary-500"
-						>{$lectureList.length} Libros en lectura</small
+						>{lectureList.length} Libros en lectura</small
 					>
 				</span>
 
-				<Accordion hover="hover:bg-primary-500 dark:hover:bg-secondary-500 hover:text-white w-28 sm:w-6/12 md:w-7/12 lg:w-10/12 xl:w-11/12">
+				<Accordion
+					hover="hover:bg-primary-500 dark:hover:bg-secondary-500 hover:text-white w-28 sm:w-6/12 md:w-7/12 lg:w-10/12 xl:w-11/12"
+				>
 					<AccordionItem regionControl="bg-primary-500 dark:bg-secondary-500 text-white">
 						<svelte:fragment slot="summary">Filtros</svelte:fragment>
 						<svelte:fragment slot="content">
@@ -105,6 +113,7 @@
 										step={10}
 										ticked
 										accent="bg-primary-500 dark:bg-secondary-500 text-primary-500 dark:text-secondary-500"
+										class="w-28 sm:w-6/12 md:w-7/12 lg:w-10/12 xl:w-11/12"
 									>
 										<svelte:fragment slot="trail">{$noPaginasSlider}</svelte:fragment>
 									</RangeSlider>
@@ -113,23 +122,31 @@
 							<AccordionItem autocollapse>
 								<svelte:fragment slot="summary">Filtrar por generos</svelte:fragment>
 								<svelte:fragment slot="content">
-									<ListBox multiple hover="hover:bg-primary-500 dark:hover:bg-secondary-500 hover:text-white">
+									<ListBox
+										multiple
+										hover="hover:bg-primary-500 dark:hover:bg-secondary-500 hover:text-white w-28 sm:w-6/12 md:w-7/12 lg:w-10/12 xl:w-11/12"
+									>
 										{#each genres as genre}
-										<ListBoxItem bind:group={$selectedGenres} name="medium" value={genre}>{genre}</ListBoxItem>
+											<ListBoxItem bind:group={$selectedGenres} name="medium" value={genre}
+												>{genre}</ListBoxItem
+											>
 										{/each}
 									</ListBox>
 								</svelte:fragment>
 							</AccordionItem>
 							<div class="flex-1">
-								<button class="hover:bg-primary-500 dark:hover:bg-secondary-500 rounded-3xl w-full p-2 pl-4 text-left" type="button" on:click={() => {
-									noPaginasSlider.set(1500);
-									selectedGenres.set([]);
-								}}>Limpiar filtros</button>
+								<button
+									class="hover:bg-primary-500 dark:hover:bg-secondary-500 rounded-3xl w-full p-2 pl-4 text-left"
+									type="button"
+									on:click={() => {
+										noPaginasSlider.set(1500);
+										selectedGenres.set([]);
+									}}>Limpiar filtros</button
+								>
 							</div>
 						</svelte:fragment>
 					</AccordionItem>
 				</Accordion>
-
 			</div>
 			<div class="grid grid-cols-4 mt-5 space-x-4">
 				{#each books as book}
